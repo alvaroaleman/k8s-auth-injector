@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: echoheaders
+  labels:
+    app: echoheaders
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echoheaders
+  template:
+    metadata:
+      labels:
+        app: echoheaders
+      annotations:
+        authinjector/basic-auth-secret-name: basic-auth
+    spec:
+      imagePullPolicy: always
+      containers:
+      - name: echoheaders
+        image: gcr.io/google_containers/echoserver:1.10
+        ports:
+        - containerPort: 8080
+          name: http

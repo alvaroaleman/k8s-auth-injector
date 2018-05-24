@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-auth-injector
+  namespace: kube-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8s-auth-injector
+  template:
+    metadata:
+      labels:
+        app: k8s-auth-injector
+    spec:
+      containers:
+        - name: k8s-auth-injector
+          image: alvaroaleman/k8s-auth-injector
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: serving-certs
+              mountPath: /etc/k8s-auth-injector
+      volumes:
+        - name: serving-certs
+          secret:
+            secretName: k8s-auth-injector-serving-certs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-auth-injector
+  namespace: kube-system
+spec:
+  ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 8443
+  selector:
+    app: k8s-auth-injector

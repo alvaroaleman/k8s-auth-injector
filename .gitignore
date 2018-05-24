@@ -1,0 +1,5 @@
+k8s-auth-injector
+*.crt
+*.key
+*.csr
+*.srl
