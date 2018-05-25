@@ -15,11 +15,13 @@ spec:
         app: echoheaders
       annotations:
         authinjector/basic-auth-secret-name: basic-auth
+        authinjector/port-name: http
     spec:
-      imagePullPolicy: always
       containers:
       - name: echoheaders
         image: gcr.io/google_containers/echoserver:1.10
         ports:
         - containerPort: 8080
           name: http
+      - name: pause
+        image: k8s.gcr.io/pause-amd64:3.1

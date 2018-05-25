@@ -5,13 +5,15 @@
 A `MutatingAdmissionWebhook` that adds a sidecar for basic authentication to your pod.
 
 It works by reading a `authinjector/basic-auth-secret-name` annotation on the pod, then
-adding a sidecar which uses the `secret` specified in the annotation.
+adding a sidecar which uses the `secret` specified in the annotation. That sidecar then redefines the port it puts
+basic auth on to point to the sidecar. This means your service should point to the name of the port, not to the
+number.
 
-Note:
- * This currently only works with pods that have exactly one container and that container has exactly one port
-   specified
- * This requires the secret specified in `authinjector/basic-auth-secret-name` to have a `auth` property with the
-   basic auth infos
+If there is more than one port defined in your pod, you must also set a `authinjector/port-name` with the
+name of the port you want basic auth on
+
+*Note:* This requires the secret specified in `authinjector/basic-auth-secret-name` to have a `auth` property with the
+basic auth infos
 
 ## Quickstart
 
