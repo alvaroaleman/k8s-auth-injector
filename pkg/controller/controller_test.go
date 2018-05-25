@@ -91,7 +91,7 @@ func TestMutation(t *testing.T) {
     ]
   }
 }`),
-			patch: `[{"op":"remove","path":"/spec/containers/1/ports/0"},{"op":"add","path":"/spec/containers/2","value":{"name":"auth-sidecar","image":"docker.io/alvaroaleman/k8s-auth-injector-sidecar","ports":[{"name":"app-port","containerPort":80,"protocol":"TCP"}],"env":[{"name":"UPSTREAM_PORT","value":"2380"},{"name":"LISTEN_PORT","value":"80"}],"resources":{},"volumeMounts":[{"name":"authinjector-basic-auth-secret-ba-secret","mountPath":"/etc/nginx/.htpasswd","subPath":"auth"}],"imagePullPolicy":"Always"}},{"op":"add","path":"/spec/volumes/0","value":{"name":"authinjector-basic-auth-secret-ba-secret","secret":{"secretName":"ba-secret"}}}]`,
+			patch: `[{"op":"remove","path":"/spec/containers/0/ports/0"},{"op":"add","path":"/spec/containers/2","value":{"name":"auth-sidecar","image":"docker.io/alvaroaleman/k8s-auth-injector-sidecar","ports":[{"name":"app-port","containerPort":80,"protocol":"TCP"}],"env":[{"name":"UPSTREAM_PORT","value":"2379"},{"name":"LISTEN_PORT","value":"80"}],"resources":{},"volumeMounts":[{"name":"authinjector-basic-auth-secret-ba-secret","mountPath":"/etc/nginx/.htpasswd","subPath":"auth"}],"imagePullPolicy":"Always"}},{"op":"add","path":"/spec/volumes/0","value":{"name":"authinjector-basic-auth-secret-ba-secret","secret":{"secretName":"ba-secret"}}}]`,
 		},
 	}
 
@@ -99,10 +99,8 @@ func TestMutation(t *testing.T) {
 		request := v1beta1.AdmissionReview{Request: &v1beta1.AdmissionRequest{Object: runtime.RawExtension{Raw: test.request}, Resource: podResource}}
 		response, err := mutate(request)
 		if err != nil {
-			t.Fatalf("Expected err to be nil but was: %v", err)
-		}
-		if response.Patch == nil {
-			response.Patch = []byte("")
+			t.Errorf("Expected err to be nil but was: %v", err)
+			continue
 		}
 		if string(response.Patch) != test.patch {
 			t.Errorf("Expected response patch \n`%s`\n to be \n`%s`", response.Patch, test.patch)

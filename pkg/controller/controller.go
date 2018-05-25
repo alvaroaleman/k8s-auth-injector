@@ -64,7 +64,7 @@ func mutate(ar v1beta1.AdmissionReview) (*v1beta1.AdmissionResponse, error) {
 
 		sidecar := corev1.Container{Name: basicAuthSidecarName,
 			Image: basicAuthSidecarImage,
-			Ports: pod.Spec.Containers[0].Ports}
+			Ports: []corev1.ContainerPort{*upstreamPort}}
 		sidecar.Env = []corev1.EnvVar{corev1.EnvVar{Name: "UPSTREAM_PORT",
 			Value: strconv.Itoa(int(upstreamPort.ContainerPort))},
 			corev1.EnvVar{Name: "LISTEN_PORT", Value: strconv.Itoa(listenPortNumber)}}
@@ -206,7 +206,7 @@ func getPortByName(ports []corev1.ContainerPort, name string) (returnPort *corev
 			if alreadyFound {
 				return nil, fmt.Errorf("there is more than one port with name %s!", name)
 			}
-			returnPort = &port
+			returnPort = port.DeepCopy()
 		}
 	}
 	if returnPort == nil {
