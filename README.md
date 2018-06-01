@@ -2,7 +2,9 @@
 
 ## Description
 
-A `MutatingAdmissionWebhook` that adds a sidecar for basic authentication to your pod.
+A `MutatingAdmissionWebhook` that adds a sidecar for authentication to your pod.
+
+Right now only basic auth is supported, but adding other mechanisms can be easely done.
 
 It works by reading a `authinjector/basic-auth-secret-name` annotation on the pod, then
 adding a sidecar which uses the `secret` specified in the annotation. That sidecar then redefines the port it puts
