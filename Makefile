@@ -44,14 +44,15 @@ secret: crt
 	@cd manifests && \
 	kubectl get secret k8s-auth-injector-serving-certs -n kube-system &>/dev/null \
 		|| kubectl create secret generic k8s-auth-injector-serving-certs \
-			-n kube-system --from-file=serve.key --from-file=serve.crt
+			-n kube-system --from-file=serve.key --from-file=serve.crt -o yaml --dry-run
+	@echo ---
 
 .PHONY: deployment
 deployment: secret
-	kubectl apply -f manifests/deployment.yaml
+	@cat manifests/deployment.yaml
+	@echo ---
 
 .PHONY: webhook
 webhook: deployment
 	@cat manifests/hook.yaml \
-		|sed 's/<<CACERT>>/$(shell cat manifests/ca.crt |base64 -w0)/g' \
-		|kubectl apply -f-
+		|sed 's/<<CACERT>>/$(shell cat manifests/ca.crt |base64 -w0)/g'
